@@ -1,21 +1,42 @@
 package com.niks.blind75;
 
+import com.niks.blind75.model.EmailResponse;
+import com.niks.blind75.model.EmailStructure;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
+@Service
 public class EmailClient {
     @Value("${spring.mail.host.username}")
-    private static String userName;
+    private String userName;
 
     @Value("${spring.mail.host.password}")
-    private static String password;
+    private String password;
 
-    public static void sendMail(String to) throws MessagingException {
+    public EmailResponse sendMails(List<String> recipients){
+        EmailResponse emailResponse = new EmailResponse();
+        List<EmailStructure> emails = new ArrayList<>();
+        for (String recipient :recipients) {
+            EmailStructure sentEmail = EmailClient.sendMail(recipient);
+            emails.add(sentEmail);
+        }
+        emailResponse.setEmails(emails);
+        return emailResponse;
+    }
+    public static EmailStructure sendMail(String to) {
+
+       // boolean sent = false;
         Properties props = new Properties();
+        EmailStructure email = new EmailStructure();
+        Message messageEmpty = null;
         props.put("mail.smtp.auth", "true");//Outgoing server requires authentication
         props.put("mail.smtp.starttls.enable", "true");//TLS must be activated
         props.put("mail.smtp.host", "smtp.gmail.com"); //Outgoing server (SMTP) - change it to your SMTP server
@@ -28,10 +49,21 @@ public class EmailClient {
             }
 
         });
+        try {
+            Message message = prepareEmailMessage(session, to);
+            Transport.send(message);
+            email.setSubject(message.getSubject());
+            email.setRecipient(Arrays.toString(message.getRecipients(Message.RecipientType.TO)));
+            email.setBody(message.getSubject());
+            email.setStatus("sent");
+            return email;
+        }
+        catch (Exception e){
+            System.out.println("Failed to send email");
+            email.setStatus("failed");
+            return email;
+        }
 
-        Message message = prepareEmailMessage(session, to);
-        Transport.send(message);
-        System.out.println("Done");
     }
 
     private static Message prepareEmailMessage(Session session, String to)
@@ -44,6 +76,4 @@ public class EmailClient {
         return mimeMessage;
     }
 
-    public static void main(String[] args) throws MessagingException {
-        EmailClient.sendMail("nani.cinihero@gmail.com");
-}}
+  }

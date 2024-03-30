@@ -1,6 +1,7 @@
 package com.niks.blind75;
 
 import com.niks.blind75.model.EmailResponse;
+import com.niks.blind75.model.EmailStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +20,9 @@ public class MailController {
     private  EmailClient emailClient;
 
     @PostMapping("/send")
-    public EmailResponse sendMail(@RequestBody List<String> recipients){
-        EmailResponse emailResponse = emailClient.sendMails(recipients);
+    public EmailResponse sendMail(@RequestBody List<EmailStructure> emailsToSend){
+        EmailResponse emailResponse = emailClient.sendMails(emailsToSend);
        return emailResponse;
     }
 
-//    public static void main(String[] args) throws MessagingException {
-//        EmailClient.sendMail("nani.cinihero@gmail.com");
-//    }
 }

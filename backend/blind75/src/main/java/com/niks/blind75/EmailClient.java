@@ -21,21 +21,20 @@ public class EmailClient {
     @Value("${spring.mail.host.password}")
     private String password;
 
-    public EmailResponse sendMails(List<String> recipients){
+    public EmailResponse sendMails(List<EmailStructure> emailsToSend){
         EmailResponse emailResponse = new EmailResponse();
         List<EmailStructure> emails = new ArrayList<>();
-        for (String recipient :recipients) {
-            EmailStructure sentEmail = EmailClient.sendMail(recipient);
+        for (EmailStructure mailToSend : emailsToSend) {
+            EmailStructure sentEmail = EmailClient.sendMail(mailToSend);
             emails.add(sentEmail);
         }
         emailResponse.setEmails(emails);
         return emailResponse;
     }
-    public static EmailStructure sendMail(String to) {
+    public static EmailStructure sendMail(EmailStructure mailToSend) {
 
        // boolean sent = false;
         Properties props = new Properties();
-        EmailStructure email = new EmailStructure();
         Message messageEmpty = null;
         props.put("mail.smtp.auth", "true");//Outgoing server requires authentication
         props.put("mail.smtp.starttls.enable", "true");//TLS must be activated
@@ -50,29 +49,29 @@ public class EmailClient {
 
         });
         try {
-            Message message = prepareEmailMessage(session, to);
+            Message message = prepareEmailMessage(session, mailToSend);
             Transport.send(message);
-            email.setSubject(message.getSubject());
-            email.setRecipient(Arrays.toString(message.getRecipients(Message.RecipientType.TO)));
-            email.setBody(message.getSubject());
-            email.setStatus("sent");
-            return email;
+            mailToSend.setSubject(message.getSubject());
+            mailToSend.setRecipient(Arrays.toString(message.getRecipients(Message.RecipientType.TO)));
+            mailToSend.setBody(message.getSubject());
+            mailToSend.setStatus("sent");
+            return mailToSend;
         }
         catch (Exception e){
             System.out.println("Failed to send email");
-            email.setStatus("failed");
-            return email;
+            mailToSend.setStatus("failed");
+            return mailToSend;
         }
 
     }
 
-    private static Message prepareEmailMessage(Session session, String to)
+    private static Message prepareEmailMessage(Session session, EmailStructure mailToSend)
             throws MessagingException {
         Message mimeMessage = new MimeMessage(session);
         mimeMessage.setFrom(new InternetAddress("sainikhil.amaravadi@gmail.com"));
-        mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        mimeMessage.setSubject("Test from Java Application");
-        mimeMessage.setText("Hi, This is computer generated email");
+        mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailToSend.getRecipient()));
+        mimeMessage.setSubject(mailToSend.getSubject());
+        mimeMessage.setText(mailToSend.getBody());
         return mimeMessage;
     }
 

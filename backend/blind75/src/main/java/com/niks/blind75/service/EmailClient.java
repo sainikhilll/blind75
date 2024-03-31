@@ -1,4 +1,4 @@
-package com.niks.blind75;
+package com.niks.blind75.service;
 
 import com.niks.blind75.model.EmailResponse;
 import com.niks.blind75.model.EmailStructure;

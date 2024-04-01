@@ -1,10 +1,17 @@
 package com.niks.blind75.service;
 
+import com.mongodb.client.result.UpdateResult;
 import com.niks.blind75.model.Subscriber;
+import com.niks.blind75.repository.CustomSubscriberRepository;
 import com.niks.blind75.repository.SubscriberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -14,6 +21,9 @@ public class SubscriberService {
 
     @Autowired
     SubscriberRepository subscriberRepository;
+
+    @Autowired
+    CustomSubscriberRepository customSubscriberRepository;
 
     public List<Subscriber> getAllSubscribers(){
         List<Subscriber> subscribers = subscriberRepository.findAll();
@@ -26,24 +36,26 @@ public class SubscriberService {
         Subscriber sub = subscriberRepository.save(subscriber);
         return sub;
     }
-
-    public Subscriber updateSubscriber(Subscriber subscriber){
-
-        Subscriber sub = subscriberRepository.findByEmail(subscriber.getEmail());
-        if(sub != null){
-        Subscriber updtatedSub = subscriberRepository.updateSubscriber(sub.getName(),sub.getEmail(),sub.getSubscriptionStatus());
-        return updtatedSub;
-        }
-        else {
-            //TODO
-            return sub;
-        }
-
-    }
+    
     public Subscriber unsubscribe(String email){
         Subscriber subscriber = subscriberRepository.findByEmail(email);
         subscriber.setSubscriptionStatus("unsubscribed");
-        Subscriber sub =  subscriberRepository.updateSubscriber(subscriber.getName(),subscriber.getEmail(),subscriber.getSubscriptionStatus());
+        Subscriber sub = customSubscriberRepository.updateSubscriberInfo(subscriber);
         return sub;
     }
+    
+    public List<Subscriber>
+    dayIncrement(List<Subscriber> subscribers){
+        List<Subscriber> updatedSubscribers = new ArrayList<>();
+        for (Subscriber subscriber: subscribers
+             ) {
+            subscriber.setDay(subscriber.getDay()+1);
+            Subscriber sub = customSubscriberRepository.updateSubscriberInfo(subscriber);
+            updatedSubscribers.add(sub);
+            
+        }
+        return updatedSubscribers;
+    }
+
+   
 }

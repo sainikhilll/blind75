@@ -17,5 +17,5 @@ public class Problem {
     private String name;
     private String problemDescription;
     private String link;
-    private String day;
+    private int day;
 }

@@ -26,7 +26,7 @@ public class TriggerService {
     @Autowired
     CustomSubscriberService customSubscriberService;
 
-    public List<EmailStructure> triggerEmails(){
+    public EmailResponse triggerEmails(){
         List<Problem> problems = problemService.getAllProblems();
         List<Subscriber> subscribers = subscriberService.getAllSubscribers();
         List<EmailStructure> emails = new ArrayList<>();
@@ -36,6 +36,7 @@ public class TriggerService {
           //  int day = subscribers.stream().filter(subscriber -> problem.getDay() ==  )
             List<Problem> problems1 = problems.stream().filter(problem1 -> problem1.getDay()==sub.getDay()).collect(Collectors.toList());
             Problem problem = problems1.get(0);
+            if(sub.getDay() <=76){
             email.setSubject("Blind 75 Problem: Problem #" +problem.getDay()+" ["+problem.getType()+"]");
             email.setRecipient(sub.getEmail());
             String html = """
@@ -50,7 +51,7 @@ public class TriggerService {
                         font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
                         margin: 0;
                         padding: 0;
-                        background-color: #f4f4f4;
+                        background-color: #03060d;
                       }
                       .container {
                         max-width: 600px;
@@ -87,16 +88,15 @@ public class TriggerService {
                     <body>
                       <div class="container">
                         <div class="header">
-                          <a  href="www.blindseventyfive.com" > <img src="testing.svg" alt="Blind 75 Challenge" > </a>
+                          <a  href="www.blindseventyfive.com" > <img src="https://cdn1.iconfinder.com/data/icons/round-icons-vol-2/512/Code_javascript_development-512.png" > </a>
                         </div>
                         <div class="content">
                     	  <p> Good Morning! Here's your leetcode problem for today <p>
-                          <p>Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.<br><br>You may assume that each input would have exactly one solution, and you may not use the same element twice.<br><br>You can return the answer in any order.<br><br> <br><br>Example 1:<br><br>Input: nums = [2,7,11,15], target = 9<br>Output: [0,1]<br>Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].<br>Example 2:<br><br>Input: nums = [3,2,4], target = 6<br>Output: [1,2]<br>Example 3:<br><br>Input: nums = [3,3], target = 6<br>Output: [0,1]<br> <br><br>Constraints:<br><br>2 <= nums.length <= 10<sup>4</sup><br>-10<sup>9</sup> <= nums[i] <= 10<sup>9</sup><br>-10<sup>9</sup> <= target <= 10<sup>9</sup><br>Only one valid answer exists.<br> <br><br>Follow-up: Can you come up with an algorithm that is less than O(n2) time complexity?</p>
-                        </div>
                     	
                     	<p>"""+ problem.getProblemDescription().replace("\r\n","<br>").replaceAll("\\^(100000|\\d{1,5})\\b","<sup>$1</sup>")+
                         """
-                         <a href="https://leetcode.com/" target="_blank">click here</a> to submit your solution on LeetCode.</p>
+                         \n <a href="+""" + problem.getLink()+ """ 
+                        " target="_blank">click here</a> to submit your solution on LeetCode.</p>
                                         
                         <div class="footer">
                          <p><a href="http://www.blindseventyfive.com" target="_blank">www.blindseventyfive.com</a> &nbsp; &nbsp; &nbsp;<a href="#">Unsubscribe</a></p>
@@ -106,10 +106,23 @@ public class TriggerService {
                     </html>""";
             email.setBody(html);
             emails.add(email);
-        }
+        }}
 
         if(!emails.isEmpty()){
-            return  emails;
+           EmailResponse emailResponse =  emailClient.sendMails(emails);
+            for (EmailStructure email: emails //TODO: Change to emailResponse
+                 ) {
+                if(email.getStatus().equals("sent"));
+                {
+                    Subscriber sub = subscriberService.findByEmail(email.getRecipient().replace("[","").replace("]",""));
+                    if(sub.getDay() <=75){
+                        sub.setDay(sub.getDay()+1);
+                    }
+                    Subscriber subscriber = customSubscriberService.updateSubscriberInfo(sub);
+                    System.out.println("Incremented day"+subscriber);
+                }
+            }
+            return  emailResponse;
         }
         return null;
     }

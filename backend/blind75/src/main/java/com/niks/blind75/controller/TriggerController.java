@@ -1,5 +1,6 @@
 package com.niks.blind75.controller;
 
+import com.niks.blind75.model.EmailResponse;
 import com.niks.blind75.model.EmailStructure;
 import com.niks.blind75.service.TriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class TriggerController {
     TriggerService triggerService;
 
     @GetMapping
-    public List<EmailStructure> prepareEmails(){
-        List<EmailStructure> emails  = triggerService.triggerEmails();
+    public EmailResponse prepareEmails(){
+        EmailResponse emails  =  triggerService.triggerEmails();
         return emails;
     }
 }

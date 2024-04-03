@@ -57,5 +57,8 @@ public class SubscriberService {
         return updatedSubscribers;
     }
 
-   
+   public  Subscriber findByEmail(String email){
+        Subscriber sub = subscriberRepository.findByEmail(email);
+        return sub;
+   }
 }

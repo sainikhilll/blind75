@@ -53,12 +53,12 @@ public class EmailClient {
             Transport.send(message);
             mailToSend.setSubject(message.getSubject());
             mailToSend.setRecipient(Arrays.toString(message.getRecipients(Message.RecipientType.TO)));
-            mailToSend.setBody(message.getSubject());
+            mailToSend.setBody((String) message.getContent());
             mailToSend.setStatus("sent");
             return mailToSend;
         }
         catch (Exception e){
-            System.out.println("Failed to send email");
+            System.out.println("Failed to send email" + e.getMessage());
             mailToSend.setStatus("failed");
             return mailToSend;
         }
@@ -71,7 +71,7 @@ public class EmailClient {
         mimeMessage.setFrom(new InternetAddress("sainikhil.amaravadi@gmail.com"));
         mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailToSend.getRecipient()));
         mimeMessage.setSubject(mailToSend.getSubject());
-        mimeMessage.setText(mailToSend.getBody());
+        mimeMessage.setContent(mailToSend.getBody(),"text/html");
         return mimeMessage;
     }
 

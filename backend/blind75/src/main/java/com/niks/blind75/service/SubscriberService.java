@@ -1,14 +1,10 @@
 package com.niks.blind75.service;
 
-import com.mongodb.client.result.UpdateResult;
+
 import com.niks.blind75.model.Subscriber;
 import com.niks.blind75.repository.CustomSubscriberRepository;
 import com.niks.blind75.repository.SubscriberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

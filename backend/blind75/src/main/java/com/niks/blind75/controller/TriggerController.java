@@ -1,7 +1,6 @@
 package com.niks.blind75.controller;
 
 import com.niks.blind75.model.EmailResponse;
-import com.niks.blind75.model.EmailStructure;
 import com.niks.blind75.service.TriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

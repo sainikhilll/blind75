@@ -1,7 +1,6 @@
 package com.niks.blind75.controller;
 
 import com.niks.blind75.model.Problem;
-import com.niks.blind75.repository.ProblemRepository;
 import com.niks.blind75.service.ProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

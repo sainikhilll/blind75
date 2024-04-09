@@ -14,17 +14,17 @@ import java.text.SimpleDateFormat;
 @Configuration
 public class Scheduler {
 
-    @Autowired
-    TriggerService triggerService;
-    @Scheduled(cron = "* * * * * *")
-    public void everyMinuteJob(){
-        System.out.println("Hello" + java.time.LocalDate.now());
-    }
-
-    @Scheduled(cron = "0 0 6 * * *")
-    public void mailScheduler(){
-        System.out.println("Before:");
-        triggerService.triggerEmails();
-        System.out.println(("Done"));
-    }
+//    @Autowired
+//    TriggerService triggerService;
+//    @Scheduled(cron = "* * * * * *")
+//    public void everyMinuteJob(){
+//        System.out.println("Hello" + java.time.LocalDate.now());
+//    }
+//
+//    @Scheduled(cron = "0 0 6 * * *")
+//    public void mailScheduler(){
+//        System.out.println("Before:");
+//        triggerService.triggerEmails();
+//        System.out.println(("Done"));
+//    }
 }
